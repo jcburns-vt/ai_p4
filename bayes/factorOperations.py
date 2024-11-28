@@ -44,11 +44,11 @@ def joinFactorsByVariableWithCallTracking(callTrackingList=None):
         # typecheck portion
         numVariableOnLeft = len([factor for factor in currentFactorsToJoin if joinVariable in factor.unconditionedVariables()])
         if numVariableOnLeft > 1:
-            print("Factor failed joinFactorsByVariable typecheck: ", factor)
+            #print("Factor failed joinFactorsByVariable typecheck: ", factor)
             raise ValueError("The joinBy variable can only appear in one factor as an \nunconditioned variable. \n" +  
                                "joinVariable: " + str(joinVariable) + "\n" +
                                ", ".join(map(str, [factor.unconditionedVariables() for factor in currentFactorsToJoin])))
-        
+
         joinedFactor = joinFactors(currentFactorsToJoin)
         return currentFactorsNotToJoin, joinedFactor
 
@@ -59,10 +59,10 @@ joinFactorsByVariable = joinFactorsByVariableWithCallTracking()
 
 def joinFactors(factors):
     """
-    Question 3: Your join implementation 
+    Question 3: Your join implementation
 
-    Input factors is a list of factors.  
-    
+    Input factors is a list of factors.
+
     You should calculate the set of unconditioned variables and conditioned 
     variables for the join of those factors.
 
@@ -93,7 +93,7 @@ def joinFactors(factors):
     if len(factors) > 1:
         intersect = reduce(lambda x, y: x & y, setsOfUnconditioned)
         if len(intersect) > 0:
-            print("Factor failed joinFactors typecheck: ", factor)
+            # print("Factor failed joinFactors typecheck: ", factor)
             raise ValueError("unconditionedVariables can only appear in one factor. \n"
                     + "unconditionedVariables: " + str(intersect) + 
                     "\nappear in more than one input factor.\n" + 
@@ -102,7 +102,28 @@ def joinFactors(factors):
 
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    for factor in factors:
+        print(factor)
+
+    unconditionedVars = []
+    conditionedVars = []
+    domains = factors[0].variableDomainsDict()
+
+    for factor in factors:
+        unconditionedVars += factor.unconditionedVariables()
+        conditionedVars += factor.conditionedVariables()
+    conditionedVars = [var for var in conditionedVars if var not in unconditionedVars]
+
+    newFactor = Factor(set(unconditionedVars), set(conditionedVars), domains)
+
+    for assignment in newFactor.getAllPossibleAssignmentDicts():
+        prob = 1.0
+        for factor in factors:
+            prob = prob * factor.getProbability(assignment)
+        newFactor.setProbability(assignment, prob)
+
+    return newFactor
 
 
 def eliminateWithCallTracking(callTrackingList=None):
