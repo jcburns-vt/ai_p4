@@ -135,7 +135,7 @@ def eliminateWithCallTracking(callTrackingList=None):
         Input factor is a single factor.
         Input eliminationVariable is the variable to eliminate from factor.
         eliminationVariable must be an unconditioned variable in factor.
-        
+
         You should calculate the set of unconditioned variables and conditioned 
         variables for the factor obtained by eliminating the variable
         eliminationVariable.
@@ -163,7 +163,7 @@ def eliminateWithCallTracking(callTrackingList=None):
                             + "in this factor\n" + 
                             "eliminationVariable: " + str(eliminationVariable) + \
                             "\nunconditionedVariables:" + str(factor.unconditionedVariables()))
-        
+
         if len(factor.unconditionedVariables()) == 1:
             print("Factor failed eliminate typecheck: ", factor)
             raise ValueError("Factor has only one unconditioned variable, so you " \
@@ -172,7 +172,12 @@ def eliminateWithCallTracking(callTrackingList=None):
                     "unconditionedVariables: " + str(factor.unconditionedVariables()))
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        oldUnconditionedVars = factor.unconditionedVariables()
+        oldConditionedVars = factor.conditionedVariables()
+        newUnconditionedVars = [
+            var for var in oldUnconditionedVars if var != eliminationVariable
+        ]
 
     return eliminate
 
