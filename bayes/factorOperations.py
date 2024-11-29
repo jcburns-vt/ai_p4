@@ -117,11 +117,11 @@ def joinFactors(factors):
 
     newFactor = Factor(set(unconditionedVars), set(conditionedVars), domains)
 
-    for assignment in newFactor.getAllPossibleAssignmentDicts():
+    for assignmentDict in newFactor.getAllPossibleAssignmentDicts():
         prob = 1.0
         for factor in factors:
-            prob = prob * factor.getProbability(assignment)
-        newFactor.setProbability(assignment, prob)
+            prob = prob * factor.getProbability(assignmentDict)
+        newFactor.setProbability(assignmentDict, prob)
 
     return newFactor
 
@@ -173,11 +173,21 @@ def eliminateWithCallTracking(callTrackingList=None):
 
         "*** YOUR CODE HERE ***"
 
-        oldUnconditionedVars = factor.unconditionedVariables()
-        oldConditionedVars = factor.conditionedVariables()
-        newUnconditionedVars = [
-            var for var in oldUnconditionedVars if var != eliminationVariable
-        ]
+        unconditionedVars = factor.unconditionedVariables()
+        unconditionedVars.remove(eliminationVariable)
+        conditionedVars = factor.conditionedVariables()
+        domains = factor.variableDomainsDict()
+        newFactor = Factor(unconditionedVars, conditionedVars, domains)
+
+        eliminationVariableDomain = domains[eliminationVariable]
+        for assignmentDict in newFactor.getAllPossibleAssignmentDicts():
+            prob = 0.0
+
+            for possibleValue in eliminationVariableDomain:
+                eliminationDict = {eliminationVariable: possibleValue} | assignmentDict
+                prob += factor.getProbability(eliminationDict)
+            newFactor.setProbability(assignmentDict, prob)
+        return newFactor
 
     return eliminate
 
